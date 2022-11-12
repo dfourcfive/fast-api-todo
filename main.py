@@ -4,8 +4,8 @@ from typing import Union
 from fastapi import FastAPI
 import jwt
 from core.config import settings
-from db.base import Base  #new
 from db.session import engine   #new
+from db.base import Base
 
 JWT_SECRET = "secret_key" # IRL we should NEVER hardcode the secret: it should be an evironment variable!!!
 JWT_ALGORITHM = "HS256"

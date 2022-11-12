@@ -10,7 +10,7 @@ from apis.utils import OAuth2PasswordBearerWithCookie
 from core.config import settings
 from core.hashing import Hasher
 from core.security import create_access_token
-from db.repository.user_queries import create_new_user, get_user_by_username , get_user_by_id
+from db.repository.user_queries import get_user_by_username , get_user_by_id
 from db.session import get_db
 from schemas.token import Token
 from schemas.users import ShowUser, UserCreate
@@ -22,13 +22,6 @@ router = APIRouter()
 def create_user(user: UserCreate):
     user = create_user(user=user)
     return user
-
-
-@router.post("/login", response_model=ShowUser)
-def create_user(user: UserCreate):
-    user = create_user(user=user)
-    return user
-
 
 
 
@@ -51,27 +44,7 @@ def login_for_access_token(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-def get_current_user_from_token(
-    token: str
-):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-    )
-    try:
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
-        )
-        id: str = payload.get("id")
-        print("id extracted is ", id)
-        if id is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
-    user = get_user_by_id(id=id)
-    if user is None:
-        raise credentials_exception
-    return 
+
 
 def authenticate_user(username: str, password: str):
     user = get_user_by_username(username=username)
