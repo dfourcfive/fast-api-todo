@@ -39,3 +39,21 @@ def get_current_user_from_token(
     if user is None:
         raise credentials_exception
     return 
+
+
+def get_user_id_from_token(token: str):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+    )
+    try:
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
+        id: str = payload.get("id")
+        print("id extracted is ", id)
+        if id is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    return id

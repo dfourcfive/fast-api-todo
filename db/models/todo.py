@@ -11,4 +11,4 @@ class Todo(Base):
     description = Column(String)
     complete = Column(Boolean, default=False)
     owner_id = Column(Integer, ForeignKey("users.id"))
-    owner = relationship("User", back_populates="items")
+    owner = relationship("User", back_populates="todos")

@@ -20,8 +20,11 @@ router = APIRouter()
 
 @router.post("/register", response_model=ShowUser)
 def create_user(user: UserCreate):
-    user = create_user(user=user)
-    return user
+    updated_user = user
+    hashed_password = Hasher.get_password_hash(user.password)
+    updated_user.password=hashed_password
+    create_user(updated_user)
+    return updated_user
 
 
 
