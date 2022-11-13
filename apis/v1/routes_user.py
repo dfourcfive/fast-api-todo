@@ -15,21 +15,25 @@ from db.session import get_db
 from schemas.token import Token
 from schemas.users import ShowUser, UserCreate
 
-router = APIRouter()
+user_router = APIRouter()
 
 
-@router.post("/register", response_model=ShowUser)
+@user_router.post("/register", response_model=ShowUser)
 def create_user(user: UserCreate):
-    updated_user = user
-    hashed_password = Hasher.get_password_hash(user.password)
-    updated_user.password=hashed_password
-    create_user(updated_user)
-    return updated_user
+    try:
+      updated_user = user
+      hashed_password = Hasher.get_password_hash(user.password)
+      updated_user.password=hashed_password
+      create_user(updated_user)
+      return updated_user
+    except Exception as e:
+      print('An exception occurred'+str(e))
 
 
 
-@router.post("/token", response_model=Token)
+@user_router.post("/token", response_model=Token)
 def login_for_access_token(
+    self,
     response: Response,
     form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(form_data.username, form_data.password)
@@ -38,8 +42,9 @@ def login_for_access_token(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
         )
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token_expires = timedelta(minutes=float(settings.ACCESS_TOKEN_EXPIRE_MINUTES))
     access_token = create_access_token(
+        self,
         data={"id": user.id}, expires_delta=access_token_expires
     )
     response.set_cookie(

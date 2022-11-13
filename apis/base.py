@@ -1,7 +1,8 @@
 from fastapi import APIRouter
-from v1 import routes_todo,routes_user
+from apis.v1.routes_todo import todo_router
+from apis.v1.routes_user import user_router
 
 api_router = APIRouter()
 
-api_router.include_router(routes_todo.router, prefix="/todos")
-api_router.include_router(routes_user.router, prefix="/users")
+api_router.include_router(todo_router, prefix="/todos")
+api_router.include_router(user_router, prefix="/users")

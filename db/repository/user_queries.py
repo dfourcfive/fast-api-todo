@@ -1,10 +1,11 @@
 from db.models.user import User
 from sqlalchemy.orm import Session
-from session import db
+from db.session import get_db
+from schemas.users import UserCreate
 
 
 
-
+db = get_db
 def get_user_by_id(id: str):
     user = db.query(User).filter(User.id == id).first()
     return user
@@ -13,14 +14,15 @@ def get_user_by_username(username: str):
     user = db.query(User).filter(User.username == username).first()
     return user
 
-def create_user(user: User):
-    if (is_username_unique(user)&is_email_unique(user)):
+def create_user(user_create: UserCreate):
+    user_object = User(**user_create.dict())
+    if (is_username_unique(user_object)&is_email_unique(user_object)):
         return False
-    db.add(user)
+    db.add(user_object)
     db.commit()
-    return user
+    return user_create
 
-def update_user(user: User):
+def update_user_by_user(user: User):
     db.update(user)
     db.commit()
     return user

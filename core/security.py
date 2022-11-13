@@ -13,7 +13,7 @@ secret = base64.b64decode(settings.SECRET_KEY)
 def create_access_token(self,data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.today() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)  # type: ignore
     to_encode.update({"exp": expire})
