@@ -6,6 +6,7 @@ from jose import JWTError
 from core.config import settings
 from db.repository.user_queries import get_user_by_username
 from fastapi import status
+import base64
 
 
 def create_access_token(self,data: dict, expires_delta: Optional[timedelta] = None):
@@ -15,7 +16,8 @@ def create_access_token(self,data: dict, expires_delta: Optional[timedelta] = No
     else:
         expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.JWT.encode(self,to_encode, key=settings.SECRET_KEY, alg=settings.ALGORITHM)
+    secret = base64.b64decode(settings.SECRET_KEY) 
+    encoded_jwt = jwt.JWT.encode(self,to_encode, jwt.jwk_from_pem(pem_content=secret), alg=settings.ALGORITHM)
     return encoded_jwt
 
 def get_current_user_from_token(
