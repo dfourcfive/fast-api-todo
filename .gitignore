@@ -19,6 +19,9 @@ docs_build
 venv
 docs.zip
 archive.zip
+__pycache__/
+*.py[cod]
+*$py.class
 
 # vim temporary files
 *~
