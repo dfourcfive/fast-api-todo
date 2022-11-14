@@ -12,3 +12,7 @@ class ShowUser(BaseModel):
     username: str
     email: EmailStr
     jwt : str
+
+class UserLogin(BaseModel):
+    username: str
+    password : str

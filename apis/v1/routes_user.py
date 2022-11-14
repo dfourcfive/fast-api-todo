@@ -13,7 +13,7 @@ from core.security import create_access_token
 from db.repository.user_queries import get_user_by_username , get_user_by_id , create_user
 from db.session import get_db
 from schemas.token import Token
-from schemas.users import ShowUser, UserCreate
+from schemas.users import ShowUser, UserCreate , UserLogin
 
 user_router = APIRouter()
 
@@ -38,11 +38,15 @@ def create_user_route_method(user: UserCreate,db: Session = Depends(get_db)):
 
 @user_router.post("/token", response_model=Token)
 def login_for_access_token(
-    self,
-    response: Response,
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    user: UserLogin,
     db: Session = Depends(get_db)):
-    user = authenticate_user(form_data.username, form_data.password)
+    result = authenticate_user(user.username, user.password,db=db)
+    print(result)
+    if(result == False):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+        )
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -50,19 +54,16 @@ def login_for_access_token(
         )
     access_token_expires = timedelta(minutes=float(settings.ACCESS_TOKEN_EXPIRE_MINUTES))
     access_token = create_access_token(
-        self,
-        data={"id": user.id}, expires_delta=access_token_expires
+        data={"id": result.id}, expires_delta=access_token_expires
     )
-    response.set_cookie(
-        key="access_token", value=f"Bearer {access_token}", httponly=True
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
+    responseResult = Token(access_token=access_token,token_type="bearer")
+    return responseResult
 
 
 
 def authenticate_user(username: str, password: str,db: Session = Depends(get_db)):
     user = get_user_by_username(username=username,db=db)
-
+    print(user)
     if not user:
         return False
     if not Hasher.verify_password(password, user.hashed_password):
