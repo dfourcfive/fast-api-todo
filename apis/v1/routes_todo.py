@@ -19,9 +19,10 @@ from schemas.token import Token
 
 todo_router = APIRouter()
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @todo_router.post("/todo", response_model=TodoCreate)
-def create_user(self,todo: TodoCreate,token: str = Depends(OAuth2PasswordBearer),db: Session = Depends(get_db)):
+def create_user(todo: TodoCreate,token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
     invalidUserOrId = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User id does not exist",
@@ -32,7 +33,8 @@ def create_user(self,todo: TodoCreate,token: str = Depends(OAuth2PasswordBearer)
     )
     
     try:
-      userID = get_user_id_from_token(self,token)
+      userID = get_user_id_from_token(token)
+      print(userID)
     except:
       return invalidToken
     
@@ -47,7 +49,7 @@ def create_user(self,todo: TodoCreate,token: str = Depends(OAuth2PasswordBearer)
 
 
 @todo_router.patch("/todo", response_model=TodoUpdate)
-def update_user(self,todo: TodoUpdate,token: str = Depends(OAuth2PasswordBearer),db: Session = Depends(get_db)):
+def update_user(todo: TodoUpdate,token: str = Depends(oauth2_scheme),db: Session = Depends(get_db)):
     invalidUserOrId = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User id does not exist",
@@ -58,7 +60,7 @@ def update_user(self,todo: TodoUpdate,token: str = Depends(OAuth2PasswordBearer)
     )
     
     try:
-      userID = get_user_id_from_token(self,token)
+      userID = get_user_id_from_token(token)
     except:
       return invalidToken
     result = update_todo(todo=todo,db=db)    
