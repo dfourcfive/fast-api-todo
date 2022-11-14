@@ -9,6 +9,7 @@ class TodoCreate(BaseModel):
     
     
 class TodoUpdate(BaseModel):
+    id: str
     title: str
     description: str
     complete: bool

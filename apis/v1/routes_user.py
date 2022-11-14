@@ -24,16 +24,14 @@ def create_user_route_method(user: UserCreate,db: Session = Depends(get_db)):
       updated_user = user
       hashed_password = Hasher.get_password_hash(updated_user.password)
       updated_user.password=hashed_password
-      print(updated_user.password)
       result = create_user(updated_user,db=db)
       if(result == False):
             raise HTTPException(status_code=404, detail="username or email is not unique")
-      print('here no errors so far')
       response=ShowUser(username=result.username,email=result.email,jwt="")
       return response
     except Exception as e:
       print('An exception occurred'+str(e))
-      raise HTTPException(status_code=404, detail="an error occured")
+      raise HTTPException(status_code=404, detail="an error occured "+str(e))
 
 
 @user_router.post("/token", response_model=Token)
