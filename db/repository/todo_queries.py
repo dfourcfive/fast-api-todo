@@ -12,7 +12,7 @@ def get_todos_by_userId(id: str,db:Session):
     return result
 
 def get_todo_by_id(id: str,db:Session):
-    result = db.query(Todo).filter(Todo.id == id).first
+    result = db.query(Todo).filter(Todo.id == id).first()
     return result
 
 def create_todo(todo: TodoCreate,id: str,db:Session):
