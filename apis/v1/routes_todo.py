@@ -20,7 +20,7 @@ from schemas.token import Token
 todo_router = APIRouter()
 
 
-@todo_router.post("/todo", response_model=Todo)
+@todo_router.post("/todo", response_model=TodoCreate)
 def create_user(self,todo: TodoCreate,token: str = Depends(OAuth2PasswordBearer),db: Session = Depends(get_db)):
     invalidUserOrId = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -46,7 +46,7 @@ def create_user(self,todo: TodoCreate,token: str = Depends(OAuth2PasswordBearer)
     return result
 
 
-@todo_router.patch("/todo", response_model=Todo,)
+@todo_router.patch("/todo", response_model=TodoUpdate)
 def update_user(self,todo: TodoUpdate,token: str = Depends(OAuth2PasswordBearer),db: Session = Depends(get_db)):
     invalidUserOrId = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

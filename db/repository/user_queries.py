@@ -20,7 +20,7 @@ def create_user(user_create: UserCreate,db:Session):
         hashed_password=user_create.password,
         is_email_confirmed=False
     )
-    if (is_username_unique(user_object,db=db)&is_email_unique(user_object,db=db)):
+    if (not(is_username_unique(user_object,db=db)&is_email_unique(user_object,db=db))):
         return False
     db.add(user_object)
     db.commit()
@@ -33,11 +33,11 @@ def update_user_by_user(user: User,db:Session):
 
 
 def is_username_unique(user: User,db:Session):
-    if (db.query(User).filter(User.username != user.username).all.size == 0):
+    if (db.query(User).filter(User.username != user.username).count() == 0):
         return True
     return False
 
 def is_email_unique(user: User,db:Session):
-    if (db.query(User).filter(User.email != user.email).all.size == 0):
+    if (db.query(User).filter(User.email != user.email).count() == 0):
         return True
     return False
